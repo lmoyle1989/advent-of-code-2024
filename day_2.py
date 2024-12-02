@@ -1,38 +1,30 @@
-all_answers = []
+f = open("day_2_input", "rt")
 
-# pt 1
-f = open("day_1_input", "rt")
-
-l = []
-r = []
+reports = []
 
 for line in f:
-    pair = line.split()
-    l.append(int(pair[0]))
-    r.append(int(pair[1]))
+    reports.append(list(map(int, line.split())))
 
-l.sort()
-r.sort()
-diff = []
+def validReport(report):
+    if report != sorted(report) and report != sorted(report, reverse = True):
+        return False
+    for i in range(1, len(report)):
+        diff = abs(report[i] - report[i-1])
+        if diff > 3 or diff == 0:
+            return False
+    return True
+    
+ans = []
 
-for i in range(len(l)):
-    diff.append(abs(l[i] - r[i]))
-
-all_answers.append(sum(diff))
-
-# pt 2
-r_cnt = {}
-for x in r:
-    if x not in r_cnt:
-        r_cnt[x] = 1
+for report in reports:
+    if validReport(report):
+        ans.append(1)
     else:
-        r_cnt[x] += 1
+        for i in range(len(report)):
+            temp = 0
+            if validReport(report[:i] + report[i+1:]):
+                temp = 1
+                break
+        ans.append(temp)
 
-similarity = []
-for y in l:
-    if y in r_cnt:
-        similarity.append(r_cnt[y] * y)
-
-all_answers.append(sum(similarity))
-
-print(all_answers)
+print(sum(ans))
